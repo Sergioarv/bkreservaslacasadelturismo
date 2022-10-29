@@ -1,0 +1,7 @@
+co\com\sergio\bkreservaslacasadelturismo\service\FlyerService.class
+co\com\sergio\bkreservaslacasadelturismo\service\FlyerServiceImpl.class
+co\com\sergio\bkreservaslacasadelturismo\controller\FlyerController.class
+co\com\sergio\bkreservaslacasadelturismo\entity\Flyer.class
+co\com\sergio\bkreservaslacasadelturismo\BkreservaslacasadelturismoApplication.class
+co\com\sergio\bkreservaslacasadelturismo\repository\FlyerRepository.class
+co\com\sergio\bkreservaslacasadelturismo\utils\GeneralResponse.class
