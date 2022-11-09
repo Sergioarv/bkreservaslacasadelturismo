@@ -1,6 +1,7 @@
 package co.com.sergio.bkreservaslacasadelturismo.service;
 
 import co.com.sergio.bkreservaslacasadelturismo.entity.Flyer;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,4 +14,10 @@ import java.util.List;
 public interface FlyerService {
 
     List<Flyer> getFlyer();
+
+    Flyer createFlyer(Flyer flyerJson, MultipartFile file);
+
+    Flyer editFlyer(Flyer flyerJson, MultipartFile file);
+
+    Boolean deleteFlyer(Flyer flyer);
 }
