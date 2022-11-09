@@ -3,6 +3,8 @@ package co.com.sergio.bkreservaslacasadelturismo.service;
 import co.com.sergio.bkreservaslacasadelturismo.entity.Flyer;
 import co.com.sergio.bkreservaslacasadelturismo.repository.FlyerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,10 +29,29 @@ public class FlyerServiceImpl implements FlyerService {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+
     @Override
-    @Transactional(readOnly = true)
     public List<Flyer> getFlyer() {
         return flyerRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Flyer> filterFlyer(String nombre, String descripcion, Pageable pageable) {
+
+        Page<Flyer> listResult;
+
+        if(nombre != null && descripcion != null){
+            listResult = flyerRepository.filterAll(nombre, descripcion, pageable);
+        }else if (nombre != null){
+            listResult = flyerRepository.filterNombre(nombre, pageable);
+        } else if (descripcion != null) {
+            listResult = flyerRepository.filterDescripcion(descripcion, pageable);
+        }else {
+            listResult = flyerRepository.findAll(pageable);
+        }
+
+        return listResult;
     }
 
     @Override
@@ -46,7 +67,8 @@ public class FlyerServiceImpl implements FlyerService {
                     Map imagen = cloudinaryService.cargarImagen(file);
                     flyerGuardado.setId_img((String) imagen.get("public_id"));
                     flyerGuardado.setNombre_img((String) imagen.get("original_filename"));
-                    flyerGuardado.setUrlImg((String) imagen.get("url"));
+                    String urlImagen = (String) imagen.get("url");
+                    flyerGuardado.setUrlImg(urlImagen.replace("http:", "https:"));
                 } catch (IOException e) {
                     flyerGuardado = null;
                 }
@@ -57,6 +79,7 @@ public class FlyerServiceImpl implements FlyerService {
     }
 
     @Override
+    @Transactional
     public Flyer editFlyer(Flyer flyerJson, MultipartFile file) {
 
         Flyer flyerGuardado;
@@ -93,6 +116,7 @@ public class FlyerServiceImpl implements FlyerService {
     }
 
     @Override
+    @Transactional
     public Boolean deleteFlyer(Flyer flyer) {
 
         Flyer flyerOriginal = flyerRepository.findById(flyer.getId()).orElse(null);

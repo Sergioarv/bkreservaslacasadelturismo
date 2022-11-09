@@ -6,6 +6,10 @@ import co.com.sergio.bkreservaslacasadelturismo.utils.GeneralResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +36,7 @@ public class FlyerController {
     private FlyerService flyerService;
 
     @GetMapping
-    public ResponseEntity<GeneralResponse<List<Flyer>>> getFlyer() {
-
+    public ResponseEntity<GeneralResponse<List<Flyer>>> getFlyer(){
         GeneralResponse<List<Flyer>> response = new GeneralResponse<>();
         List<Flyer> data;
         HttpStatus status = HttpStatus.OK;
@@ -42,11 +45,56 @@ public class FlyerController {
 
         if (data != null) {
             response.setData(data);
-            response.setMessage("Flyer obtenidos con exito");
             response.setSuccess(true);
+
+            if(data.size() > 1){
+                response.setMessage("Lista de Flyer obtenida con exito");
+            } else if (data.size() == 1) {
+                response.setMessage("Flyer obtenido con exito");
+            }else {
+                response.setSuccess(false);
+                response.setMessage("La lista de Flyer se encuentra vacia");
+            }
         } else {
             response.setData(null);
-            response.setMessage("Error al obtener los Flyer");
+            response.setMessage("Hubo un error al obtener la lista de Flyer");
+            response.setSuccess(false);
+        }
+
+        return new ResponseEntity<>(response, status);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<GeneralResponse<Page<Flyer>>> filterFlyer(
+            @RequestParam(value = "nombre", required = false) String nombre,
+            @RequestParam(value = "descripcion", required = false) String descripcion,
+            @RequestParam(value = "pagina", defaultValue = "0", required = false) int pagina,
+            @RequestParam(value = "cantPagina", defaultValue = "10", required = false) int cantPagina
+    ) {
+
+        GeneralResponse<Page<Flyer>> response = new GeneralResponse<>();
+        Page<Flyer> data;
+        HttpStatus status = HttpStatus.OK;
+
+        Pageable pageable = PageRequest.of(pagina, cantPagina, Sort.by("nombre").ascending());
+
+        data = flyerService.filterFlyer(nombre, descripcion, pageable);
+
+        if (data != null) {
+            response.setData(data);
+            response.setSuccess(true);
+
+            if(data.getContent().size() > 1){
+                response.setMessage("Lista de Flyer obtenida con exito");
+            } else if (data.getContent().size() == 1) {
+                response.setMessage("Flyer obtenido con exito");
+            }else {
+                response.setSuccess(false);
+                response.setMessage("La lista de Flyer se encuentra vacia");
+            }
+        } else {
+            response.setData(null);
+            response.setMessage("Hubo un error al obtener la lista de Flyer");
             response.setSuccess(false);
         }
 
