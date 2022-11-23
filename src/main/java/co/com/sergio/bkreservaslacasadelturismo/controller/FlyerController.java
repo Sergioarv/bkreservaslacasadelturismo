@@ -35,6 +35,10 @@ public class FlyerController {
     @Autowired
     private FlyerService flyerService;
 
+    /**
+     * Método encargado de listar todos los flyer
+     * @return lista de flyer
+     */
     @GetMapping
     public ResponseEntity<GeneralResponse<List<Flyer>>> getFlyer(){
         GeneralResponse<List<Flyer>> response = new GeneralResponse<>();
@@ -64,6 +68,14 @@ public class FlyerController {
         return new ResponseEntity<>(response, status);
     }
 
+    /**
+     * Método encargado de filtrar los flyer
+     * @param nombre atributo del flyer
+     * @param descripcion atributo del flyer
+     * @param pagina numero de pagina a filtrar
+     * @param cantPagina numero de flyer por pagina
+     * @return paginacion de flyer filtrados
+     */
     @GetMapping("/filter")
     public ResponseEntity<GeneralResponse<Page<Flyer>>> filterFlyer(
             @RequestParam(value = "nombre", required = false) String nombre,
@@ -207,6 +219,11 @@ public class FlyerController {
         return null;
     }
 
+    /**
+     * Método encargado de eliminar un flyer
+     * @param flyer elemento a eliminar
+     * @return booleano que confirma su eliminación
+     */
     @DeleteMapping
     public ResponseEntity<GeneralResponse<Boolean>> deleteFlyer(@RequestBody Flyer flyer){
 
